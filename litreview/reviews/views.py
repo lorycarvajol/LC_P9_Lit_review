@@ -4,7 +4,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from .models import Ticket, Review
 from .forms import TicketForm, ReviewForm
-
+from django.contrib.auth.models import User
+from django.db.models import Q
+from .models import UserFollows
+from django.http import JsonResponse
 
 def home(request):
     if request.user.is_authenticated:
@@ -150,3 +153,62 @@ def delete_ticket(request, ticket_id):
         ticket.delete()
         return redirect("user_posts")
     return render(request, "reviews/confirm_delete.html", {"object": ticket})
+
+
+@login_required
+def subscriptions(request):
+    search_query = request.GET.get("search", "")
+    search_results = []
+    if search_query:
+        search_results = User.objects.filter(username__icontains=search_query).exclude(
+            username=request.user.username
+        )
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        try:
+            user_to_follow = User.objects.get(username=username)
+            if user_to_follow != request.user:
+                UserFollows.objects.get_or_create(
+                    user=request.user, followed_user=user_to_follow
+                )
+        except User.DoesNotExist:
+            pass
+
+    subscriptions = UserFollows.objects.filter(user=request.user)
+    followers = UserFollows.objects.filter(followed_user=request.user)
+
+    return render(
+        request,
+        "reviews/subscriptions.html",
+        {
+            "subscriptions": subscriptions,
+            "followers": followers,
+            "search_results": search_results,
+            "search_query": search_query,
+        },
+    )
+
+
+@login_required
+def unfollow(request, user_id):
+    user_to_unfollow = get_object_or_404(User, id=user_id)
+    UserFollows.objects.filter(
+        user=request.user, followed_user=user_to_unfollow
+    ).delete()
+    return redirect("subscriptions")
+
+
+@login_required
+def user_search(request):
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        query = request.GET.get("term", "")
+        users = User.objects.filter(username__icontains=query).exclude(
+            username=request.user.username
+        )
+        results = [
+            {"id": user.id, "label": user.username, "value": user.username}
+            for user in users
+        ]
+        return JsonResponse(results, safe=False)
+    return JsonResponse([], safe=False)

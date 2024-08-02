@@ -39,7 +39,4 @@ class UserFollows(models.Model):
     )
 
     class Meta:
-        unique_together = (
-            "user",
-            "followed_user",
-        )
+        unique_together = ("user", "followed_user")

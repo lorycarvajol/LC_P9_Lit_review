@@ -13,5 +13,8 @@ urlpatterns = [
     path("delete_review/<int:review_id>/", views.delete_review, name="delete_review"),
     path("edit_ticket/<int:ticket_id>/", views.edit_ticket, name="edit_ticket"),
     path("delete_ticket/<int:ticket_id>/", views.delete_ticket, name="delete_ticket"),
+    path("subscriptions/", views.subscriptions, name="subscriptions"),
+    path("unfollow/<int:user_id>/", views.unfollow, name="unfollow"),
+    path("user_search/", views.user_search, name="user_search"),
     path("accounts/", include("django.contrib.auth.urls")),
 ]

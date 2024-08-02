@@ -1,0 +1,51 @@
+{% extends 'reviews/base.html' %}
+
+{% block title %}Abonnements{% endblock %}
+
+{% block content %}
+<h1>Suivre d'autres utilisateurs</h1>
+<form method="post" action="{% url 'subscriptions' %}">
+    {% csrf_token %}
+    <input type="text" id="user-search" name="username" placeholder="Nom d'utilisateur">
+    <button type="submit">S'abonner</button>
+</form>
+
+<h2>Abonnements</h2>
+<table>
+    {% for subscription in subscriptions %}
+        <tr>
+            <td>{{ subscription.followed_user.username }}</td>
+            <td>
+                <form method="post" action="{% url 'unfollow' subscription.followed_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Désabonner</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h2>Abonnés</h2>
+<table>
+    {% for follower in followers %}
+        <tr>
+            <td>{{ follower.user.username }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script>
+$(function() {
+    $("#user-search").autocomplete({
+        source: "{% url 'user_search' %}",
+        minLength: 2,
+        select: function(event, ui) {
+            $('#user-search').val(ui.item.value);
+        }
+    });
+});
+</script>
+{% endblock %}
