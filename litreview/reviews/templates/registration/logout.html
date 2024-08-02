@@ -1,0 +1,8 @@
+{% extends 'reviews/base.html' %}
+
+{% block title %}Déconnexion{% endblock %}
+
+{% block content %}
+<h1>Vous êtes déconnecté</h1>
+<p><a href="{% url 'login' %}">Se reconnecter</a></p>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'reviews/base.html' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+<h1>Bienvenue sur LITReview</h1>
+{% if user.is_authenticated %}
+    <p>Bonjour, {{ user.username }} !</p>
+{% else %}
+    <p><a href="{% url 'login' %}">Connectez-vous</a> ou <a href="{% url 'signup' %}">inscrivez-vous</a> pour continuer.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,67 @@
+# Fichiers et répertoires Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+
+# Répertoires de l'environnement virtuel
+env/
+venv/
+ENV/
+venv.bak/
+
+# Répertoires de configuration de l'éditeur
+.idea/
+.vscode/
+*.swp
+
+# Répertoires de configuration de l'IDE
+*.idea/
+*.iml
+*.vscode/
+
+# Fichiers de configuration spécifiques à l'OS
+.DS_Store
+Thumbs.db
+
+# Fichiers de logs
+*.log
+
+# Fichiers médias (en fonction de la configuration MEDIA_ROOT)
+media/
+
+# Fichiers statiques (en fonction de la configuration STATIC_ROOT)
+staticfiles/
+
+# Fichiers de configuration secrets
+.env
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Test logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Django Stuff:
+*.log
+local_settings.py
+
+# PyCharm
+.idea/
+
+# Sphinx documentation
+docs/_build/

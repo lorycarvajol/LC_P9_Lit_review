@@ -1,0 +1,29 @@
+{% extends 'reviews/base.html' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+<h1>Flux des critiques</h1>
+<div>
+    <h2>Tickets</h2>
+    {% for ticket in tickets %}
+        <div>
+            <h3>{{ ticket.title }} - {{ ticket.user.username }}</h3>
+            <p>{{ ticket.description }}</p>
+            <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+            <p>{{ ticket.time_created }}</p>
+            <a href="{% url 'create_review' ticket.id %}">Créer une critique</a>
+        </div>
+    {% endfor %}
+</div>
+<div>
+    <h2>Critiques</h2>
+    {% for review in reviews %}
+        <div>
+            <h3>{{ review.headline }} - {{ review.rating }} étoiles - {{ review.user.username }}</h3>
+            <p>{{ review.body }}</p>
+            <p>{{ review.time_created }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

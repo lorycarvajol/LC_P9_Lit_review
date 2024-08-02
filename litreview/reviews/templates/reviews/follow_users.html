@@ -1,0 +1,27 @@
+{% extends 'reviews/base.html' %}
+
+{% block title %}Suivre des Utilisateurs{% endblock %}
+
+{% block content %}
+<h1>Suivre des utilisateurs</h1>
+<form method="post">
+    {% csrf_token %}
+    <label for="username">Nom d'utilisateur</label>
+    <input type="text" id="username" name="username" required>
+    <button type="submit">Envoyer</button>
+</form>
+
+<h2>Abonnements</h2>
+<ul>
+    {% for follow in following %}
+        <li>{{ follow.followed_user.username }} <a href="{% url 'unfollow_user' follow.id %}">Désabonner</a></li>
+    {% endfor %}
+</ul>
+
+<h2>Abonnés</h2>
+<ul>
+    {% for follow in followers %}
+        <li>{{ follow.user.username }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
