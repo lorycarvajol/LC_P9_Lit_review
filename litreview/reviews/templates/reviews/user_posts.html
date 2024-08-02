@@ -4,35 +4,36 @@
 
 {% block content %}
 <h1>Vos posts</h1>
-<div>
-    <h2>Vos tickets</h2>
-    {% for ticket in user_tickets %}
-        <div>
-            <h3>{{ ticket.title }}</h3>
-            <p>{{ ticket.description }}</p>
-            <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
-            <p>{{ ticket.time_created }}</p>
-            <a href="{% url 'edit_ticket' ticket.id %}">Modifier</a>
-            <form method="post" action="{% url 'delete_ticket' ticket.id %}">
-                {% csrf_token %}
-                <button type="submit">Supprimer</button>
-            </form>
+
+{% for review in user_reviews %}
+    <div style="border: 1px solid #ddd; margin-bottom: 10px; padding: 10px;">
+        <p>Vous avez publié une critique</p>
+        <h3>{{ review.headline }} - {{ review.rating }} étoiles</h3>
+        <p>{{ review.body }}</p>
+        <p>{{ review.time_created }}</p>
+        <div style="border: 1px solid #ddd; padding: 10px;">
+            <p>Ticket - {{ review.ticket.user.username }}</p>
+            <p>{{ review.ticket.title }} - {{ review.ticket.description }}</p>
+            {% if review.ticket.image %}
+                <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" style="max-width: 100px;">
+            {% endif %}
         </div>
-    {% endfor %}
-</div>
-<div>
-    <h2>Vos critiques</h2>
-    {% for review in user_reviews %}
-        <div>
-            <h3>{{ review.headline }} - {{ review.rating }} étoiles</h3>
-            <p>{{ review.body }}</p>
-            <p>{{ review.time_created }}</p>
-            <a href="{% url 'edit_review' review.id %}">Modifier</a>
-            <form method="post" action="{% url 'delete_review' review.id %}">
-                {% csrf_token %}
-                <button type="submit">Supprimer</button>
-            </form>
-        </div>
-    {% endfor %}
-</div>
+        <button onclick="location.href='{% url 'edit_review' review.id %}'">Modifier</button>
+        <button onclick="location.href='{% url 'delete_review' review.id %}'">Supprimer</button>
+    </div>
+{% endfor %}
+
+{% for ticket in user_tickets %}
+    <div style="border: 1px solid #ddd; margin-bottom: 10px; padding: 10px;">
+        <p>Vous avez publié un ticket</p>
+        <h3>{{ ticket.title }}</h3>
+        <p>{{ ticket.description }}</p>
+        {% if ticket.image %}
+            <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" style="max-width: 100px;">
+        {% endif %}
+        <p>{{ ticket.time_created }}</p>
+        <button onclick="location.href='{% url 'edit_ticket' ticket.id %}'">Modifier</button>
+        <button onclick="location.href='{% url 'delete_ticket' ticket.id %}'">Supprimer</button>
+    </div>
+{% endfor %}
 {% endblock %}

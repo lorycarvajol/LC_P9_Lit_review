@@ -2,22 +2,43 @@
 <html>
 <head>
     <title>{% block title %}LITReview{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+        nav a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav>
-            <a href="{% url 'home' %}">Accueil</a>
-            {% if user.is_authenticated %}
-                <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit">Se déconnecter</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">Se connecter</a>
-                <a href="{% url 'signup' %}">S'inscrire</a>
-            {% endif %}
-        </nav>
+        <h1>LITReview</h1>
     </header>
+    <nav>
+        <a href="{% url 'home' %}">Flux</a>
+        <a href="{% url 'user_posts' %}">Posts</a>
+        <a href="{% url 'logout' %}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+            {% csrf_token %}
+        </form>
+    </nav>
     <main>
         {% block content %}{% endblock %}
     </main>

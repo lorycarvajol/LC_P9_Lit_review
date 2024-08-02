@@ -1,6 +1,5 @@
 from django import forms
 from .models import Ticket, Review
-from django.contrib.auth.models import User
 
 
 class TicketForm(forms.ModelForm):
@@ -10,10 +9,10 @@ class TicketForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+    RATING_CHOICES = [(i, str(i)) for i in range(6)]
+
+    rating = forms.ChoiceField(choices=RATING_CHOICES, widget=forms.RadioSelect)
+
     class Meta:
         model = Review
         fields = ["headline", "body", "rating"]
-
-
-class UserFollowForm(forms.Form):
-    username = forms.CharField(max_length=150)
