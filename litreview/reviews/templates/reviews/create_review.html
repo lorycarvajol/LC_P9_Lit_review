@@ -4,34 +4,9 @@
 
 {% block content %}
 <h1>Créer une critique</h1>
-
-<form method="post" enctype="multipart/form-data">
+<form method="post">
     {% csrf_token %}
-    
-    <fieldset>
-        <legend>Livre / Article</legend>
-        {{ ticket_form.title.label_tag }}<br>
-        {{ ticket_form.title }}<br><br>
-
-        {{ ticket_form.description.label_tag }}<br>
-        {{ ticket_form.description }}<br><br>
-
-        {{ ticket_form.image.label_tag }}<br>
-        {{ ticket_form.image }}<br><br>
-    </fieldset>
-    
-    <fieldset>
-        <legend>Critique</legend>
-        {{ review_form.headline.label_tag }}<br>
-        {{ review_form.headline }}<br><br>
-
-        {{ review_form.rating.label_tag }}<br>
-        {{ review_form.rating }}<br><br>
-
-        {{ review_form.body.label_tag }}<br>
-        {{ review_form.body }}<br><br>
-    </fieldset>
-
+    {{ form.as_p }}
     <button type="submit">Envoyer</button>
 </form>
 {% endblock %}

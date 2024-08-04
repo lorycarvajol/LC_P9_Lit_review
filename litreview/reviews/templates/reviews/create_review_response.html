@@ -1,0 +1,19 @@
+{% extends 'reviews/base.html' %}
+
+{% block title %}Répondre à une demande de critique{% endblock %}
+
+{% block content %}
+<h1>Répondre à une demande de critique</h1>
+<div>
+    <h3>{{ ticket.title }}</h3>
+    <p>{{ ticket.description }}</p>
+    {% if ticket.image %}
+        <img src="{{ ticket.image.url }}" alt="Image du ticket">
+    {% endif %}
+</div>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Envoyer</button>
+</form>
+{% endblock %}

@@ -3,51 +3,34 @@
 {% block title %}Accueil{% endblock %}
 
 {% block content %}
+<h1>Bienvenue sur LITReview</h1>
 
-{% if user.is_authenticated %}
-    <style>
-        
-    </style>
-
+<h2>Demandes de critiques</h2>
+{% for ticket in tickets %}
     <div>
-        <button onclick="location.href='{% url 'create_ticket' %}'">Demander une critique</button>
-        <!-- Le bouton pour créer une critique générale sans ticket -->
-        <button onclick="location.href='{% url 'create_review' 0 %}'">Créer une critique</button>
+        <h2>{{ ticket.title }}</h2>
+        <p>{{ ticket.description }}</p>
+        {% if ticket.image %}
+            <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" style="max-width: 100px;">
+        {% endif %}
+        <p>Posté par {{ ticket.user.username }} le {{ ticket.time_created }}</p>
+        {% if not ticket.has_review %}
+            <a href="{% url 'respond_to_ticket' ticket.id %}">Répondre à cette demande</a>
+        {% else %}
+            <p>Critique déjà faite</p>
+        {% endif %}
     </div>
+{% endfor %}
 
+<h2>Critiques</h2>
+{% for review in reviews %}
     <div>
-        <h2>Flux</h2>
-        {% for review in reviews %}
-            <div style="border: 1px solid #ddd; margin-bottom: 10px; padding: 10px;">
-                <p>Vous avez publié une critique</p>
-                <h3>{{ review.headline }} - {{ review.rating }} étoiles</h3>
-                <p>{{ review.body }}</p>
-                <p>{{ review.time_created }}</p>
-                <div style="border: 1px solid #ddd; padding: 10px;">
-                    <p>Ticket - {{ review.ticket.user.username }}</p>
-                    <p>{{ review.ticket.title }} - {{ review.ticket.description }}</p>
-                    {% if review.ticket.image %}
-                        <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" style="max-width: 100px;">
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-
-        {% for ticket in tickets %}
-            <div style="border: 1px solid #ddd; margin-bottom: 10px; padding: 10px;">
-                <p>{{ ticket.user.username }} a demandé une critique</p>
-                <h3>{{ ticket.title }}</h3>
-                <p>{{ ticket.description }}</p>
-                {% if ticket.image %}
-                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" style="max-width: 100px;">
-                {% endif %}
-                <p>{{ ticket.time_created }}</p>
-                <button onclick="location.href='{% url 'create_review' ticket.id %}'">Créer une critique</button>
-            </div>
-        {% endfor %}
+        <h2>{{ review.headline }} - {{ review.rating }} étoiles</h2>
+        <p>{{ review.body }}</p>
+        <p>Posté par {{ review.user.username }} le {{ review.time_created }}</p>
+        {% if review.ticket %}
+            <p>En réponse à la demande : {{ review.ticket.title }}</p>
+        {% endif %}
     </div>
-
-{% else %}
-    <p><a href="{% url 'login' %}">Connectez-vous</a> ou <a href="{% url 'signup' %}">inscrivez-vous</a> pour continuer.</p>
-{% endif %}
+{% endfor %}
 {% endblock %}

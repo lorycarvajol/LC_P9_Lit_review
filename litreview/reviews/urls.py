@@ -7,7 +7,12 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("create_ticket/", views.create_ticket, name="create_ticket"),
-    path("create_review/<int:ticket_id>/", views.create_review, name="create_review"),
+    path("create_review/", views.create_review, name="create_review"),
+    path(
+        "create_review/<int:ticket_id>/",
+        views.create_review_response,
+        name="respond_to_ticket",
+    ),
     path("user_posts/", views.user_posts, name="user_posts"),
     path("edit_review/<int:review_id>/", views.edit_review, name="edit_review"),
     path("delete_review/<int:review_id>/", views.delete_review, name="delete_review"),

@@ -1,23 +1,12 @@
 {% extends 'reviews/base.html' %}
 
-{% block title %}Créer un Ticket{% endblock %}
+{% block title %}Créer un ticket{% endblock %}
 
 {% block content %}
 <h1>Créer un ticket</h1>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <div style="margin-bottom: 10px;">
-        {{ form.title.label_tag }}<br>
-        {{ form.title }}<br><br>
-    </div>
-    <div style="margin-bottom: 10px;">
-        {{ form.description.label_tag }}<br>
-        {{ form.description }}<br><br>
-    </div>
-    <div style="margin-bottom: 10px;">
-        {{ form.image.label_tag }}<br>
-        {{ form.image }}<br><br>
-    </div>
+    {{ form.as_p }}
     <button type="submit">Envoyer</button>
 </form>
 {% endblock %}

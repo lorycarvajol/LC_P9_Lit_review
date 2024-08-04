@@ -9,15 +9,6 @@ from django.db.models import Q
 from .models import UserFollows
 from django.http import JsonResponse
 
-def home(request):
-    if request.user.is_authenticated:
-        tickets = Ticket.objects.all()
-        reviews = Review.objects.all()
-        return render(
-            request, "reviews/home.html", {"tickets": tickets, "reviews": reviews}
-        )
-    return render(request, "reviews/home.html")
-
 
 def signup(request):
     if request.method == "POST":
@@ -55,6 +46,21 @@ def logout_view(request):
 
 
 @login_required
+def home(request):
+    tickets = Ticket.objects.all().order_by("-time_created")
+    reviews = Review.objects.all().order_by("-time_created")
+
+    for ticket in tickets:
+        ticket.has_review = reviews.filter(ticket=ticket).exists()
+
+    context = {
+        "tickets": tickets,
+        "reviews": reviews,
+    }
+    return render(request, "reviews/home.html", context)
+
+
+@login_required
 def create_ticket(request):
     if request.method == "POST":
         form = TicketForm(request.POST, request.FILES)
@@ -69,34 +75,37 @@ def create_ticket(request):
 
 
 @login_required
-def create_review(request, ticket_id=None):
-    ticket = (
-        get_object_or_404(Ticket, id=ticket_id)
-        if ticket_id and ticket_id != 0
-        else None
-    )
+def create_review(request):
     if request.method == "POST":
-        ticket_form = TicketForm(request.POST, request.FILES, instance=ticket)
-        review_form = ReviewForm(request.POST)
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.save()
+            return redirect("home")
+    else:
+        form = ReviewForm()
+    return render(request, "reviews/create_review.html", {"form": form})
 
-        if ticket_form.is_valid() and review_form.is_valid():
-            ticket = ticket_form.save(commit=False)
-            ticket.user = request.user
-            ticket.save()
 
-            review = review_form.save(commit=False)
+@login_required
+def create_review_response(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    if Review.objects.filter(ticket=ticket).exists():
+        # Si une critique existe déjà pour ce ticket, rediriger l'utilisateur
+        return redirect("home")  # Vous pouvez également afficher un message d'erreur
+    if request.method == "POST":
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
             review.user = request.user
             review.ticket = ticket
             review.save()
             return redirect("home")
     else:
-        ticket_form = TicketForm(instance=ticket)
-        review_form = ReviewForm()
-
+        form = ReviewForm()
     return render(
-        request,
-        "reviews/create_review.html",
-        {"ticket_form": ticket_form, "review_form": review_form, "ticket": ticket},
+        request, "reviews/create_review_response.html", {"form": form, "ticket": ticket}
     )
 
 
