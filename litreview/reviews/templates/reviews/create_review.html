@@ -4,9 +4,51 @@
 
 {% block content %}
 <h1>Créer une critique</h1>
-<form method="post">
+
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Envoyer</button>
+    
+    <!-- Livre / Article -->
+    <fieldset>
+        <legend>Livre / Article</legend>
+        <div class="form-group">
+            <label for="id_title">Titre</label>
+            <input type="text" name="title" id="id_title" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_description">Description</label>
+            <textarea name="description" id="id_description" class="form-control" rows="5" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="id_image">Image</label>
+            <input type="file" name="image" id="id_image" class="form-control-file">
+        </div>
+    </fieldset>
+
+    <!-- Critique -->
+    <fieldset>
+        <legend>Critique</legend>
+        <div class="form-group">
+            <label for="id_headline">Titre</label>
+            <input type="text" name="headline" id="id_headline" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_rating">Note</label>
+            <div>
+                <label><input type="radio" name="rating" value="0"> 0</label>
+                <label><input type="radio" name="rating" value="1"> 1</label>
+                <label><input type="radio" name="rating" value="2"> 2</label>
+                <label><input type="radio" name="rating" value="3"> 3</label>
+                <label><input type="radio" name="rating" value="4"> 4</label>
+                <label><input type="radio" name="rating" value="5"> 5</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_body">Commentaire</label>
+            <textarea name="body" id="id_body" class="form-control" rows="5" required></textarea>
+        </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary">Envoyer</button>
 </form>
 {% endblock %}

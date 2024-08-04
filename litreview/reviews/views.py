@@ -77,15 +77,26 @@ def create_ticket(request):
 @login_required
 def create_review(request):
     if request.method == "POST":
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
+        ticket_form = TicketForm(request.POST, request.FILES)
+        review_form = ReviewForm(request.POST)
+        if ticket_form.is_valid() and review_form.is_valid():
+            ticket = ticket_form.save(commit=False)
+            ticket.user = request.user
+            ticket.save()
+
+            review = review_form.save(commit=False)
             review.user = request.user
+            review.ticket = ticket
             review.save()
             return redirect("home")
     else:
-        form = ReviewForm()
-    return render(request, "reviews/create_review.html", {"form": form})
+        ticket_form = TicketForm()
+        review_form = ReviewForm()
+    return render(
+        request,
+        "reviews/create_review.html",
+        {"ticket_form": ticket_form, "review_form": review_form},
+    )
 
 
 @login_required
