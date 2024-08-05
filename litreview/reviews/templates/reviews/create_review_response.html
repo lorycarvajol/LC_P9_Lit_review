@@ -1,19 +1,49 @@
 {% extends 'reviews/base.html' %}
 
-{% block title %}Répondre à une demande de critique{% endblock %}
+{% block title %}Créer une critique{% endblock %}
 
 {% block content %}
-<h1>Répondre à une demande de critique</h1>
+<h1>Créer une critique</h1>
+
 <div>
-    <h3>{{ ticket.title }}</h3>
-    <p>{{ ticket.description }}</p>
-    {% if ticket.image %}
-        <img src="{{ ticket.image.url }}" alt="Image du ticket">
-    {% endif %}
+    <h3>Vous êtes en train de poster en réponse à</h3>
+    <div>
+        <p><strong>{{ ticket.user.username }}</strong> a demandé une critique</p>
+        <p><strong>{{ ticket.title }} - {{ ticket.description }}</strong></p>
+        {% if ticket.image %}
+            <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" style="max-width: 100px;">
+        {% endif %}
+        <p>{{ ticket.time_created }}</p>
+    </div>
 </div>
-<form method="post">
+
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Envoyer</button>
+    
+    <!-- Critique -->
+    <fieldset>
+        <legend>Critique</legend>
+        <div class="form-group">
+            <label for="id_headline">Titre</label>
+            <input type="text" name="headline" id="id_headline" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_rating">Note</label>
+            <div>
+                <label><input type="radio" name="rating" value="0"> 0</label>
+                <label><input type="radio" name="rating" value="1"> 1</label>
+                <label><input type="radio" name="rating" value="2"> 2</label>
+                <label><input type="radio" name="rating" value="3"> 3</label>
+                <label><input type="radio" name="rating" value="4"> 4</label>
+                <label><input type="radio" name="rating" value="5"> 5</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="id_body">Commentaire</label>
+            <textarea name="body" id="id_body" class="form-control" rows="5" required></textarea>
+        </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary">Envoyer</button>
 </form>
 {% endblock %}

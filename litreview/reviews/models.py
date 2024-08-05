@@ -10,6 +10,9 @@ class Ticket(models.Model):
     image = models.ImageField(null=True, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
 
+    def has_review(self):
+        return Review.objects.filter(ticket=self).exists()
+
     def __str__(self):
         return self.title
 

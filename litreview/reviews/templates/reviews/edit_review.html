@@ -1,27 +1,111 @@
-{% extends 'reviews/base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modifier votre critique</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+        nav a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        main {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .form-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-container h2 {
+            margin-top: 0;
+        }
+        .form-container input[type="text"],
+        .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container input[type="file"] {
+            margin: 10px 0;
+        }
+        .form-container input[type="submit"] {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-container input[type="submit"]:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{% url 'home' %}">Accueil</a>
+            <a href="{% url 'create_ticket' %}">Demander une critique</a>
+            <a href="{% url 'create_review' %}">Créer une critique</a>
+            <a href="{% url 'subscriptions' %}">Abonnements</a>
+            <a href="{% url 'user_posts' %}">Mes posts</a>
+            <a href="{% url 'logout' %}">Déconnexion</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Modifier votre critique</h1>
+        <div class="form-container">
+            <h2>Vous êtes en train de poster en réponse à</h2>
+            <div>
+                <p>{{ review.ticket.user.username }} a demandé une critique</p>
+                <p><strong>{{ review.ticket.title }}</strong> - {{ review.ticket.description }}</p>
+                {% if review.ticket.image %}
+                    <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" style="max-width: 100px;">
+                {% endif %}
+                <p>{{ review.ticket.time_created }}</p>
+            </div>
+        </div>
+        <div class="form-container">
+            <h2>Critique</h2>
+            <form method="post">
+                {% csrf_token %}
+                <label for="headline">Titre</label>
+                <input type="text" id="headline" name="headline" value="{{ form.headline.value }}" required>
 
-{% block title %}Modifier la Critique{% endblock %}
+                <label for="rating">Note</label><br>
+                {% for i in form.rating.field.choices %}
+                    <input type="radio" id="rating{{ forloop.counter0 }}" name="rating" value="{{ i.0 }}" {% if i.0 == form.rating.value %}checked{% endif %}>
+                    <label for="rating{{ forloop.counter0 }}">{{ i.1 }}</label>
+                {% endfor %}
+                <br>
 
-{% block content %}
-<h1>Modifier votre critique</h1>
-<form method="post">
-    {% csrf_token %}
-    <label for="headline">Titre</label>
-    <input type="text" id="headline" name="headline" value="{{ review.headline }}" required><br>
+                <label for="body">Commentaire</label>
+                <textarea id="body" name="body" rows="4" required>{{ form.body.value }}</textarea>
 
-    <label for="body">Commentaire</label>
-    <textarea id="body" name="body" required>{{ review.body }}</textarea><br>
-
-    <label for="rating">Note</label>
-    <select id="rating" name="rating">
-        <option value="0" {% if review.rating == 0 %}selected{% endif %}>0</option>
-        <option value="1" {% if review.rating == 1 %}selected{% endif %}>1</option>
-        <option value="2" {% if review.rating == 2 %}selected{% endif %}>2</option>
-        <option value="3" {% if review.rating == 3 %}selected{% endif %}>3</option>
-        <option value="4" {% if review.rating == 4 %}selected{% endif %}>4</option>
-        <option value="5" {% if review.rating == 5 %}selected{% endif %}>5</option>
-    </select><br>
-
-    <button type="submit">Envoyer</button>
-</form>
-{% endblock %}
+                <input type="submit" value="Envoyer">
+            </form>
+        </div>
+    </main>
+</body>
+</html>
