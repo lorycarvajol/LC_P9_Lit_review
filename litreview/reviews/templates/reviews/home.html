@@ -1,141 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Flux</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #444;
-        }
-        nav a {
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        nav a:hover {
-            background-color: #555;
-        }
-        main {
-            width: 80%;
-            margin: 20px auto;
-        }
-        .form-container {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .form-container h2 {
-            margin-top: 0;
-        }
-        .form-container input[type="text"],
-        .form-container textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .form-container input[type="file"] {
-            margin: 10px 0;
-        }
-        .form-container input[type="submit"] {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .form-container input[type="submit"]:hover {
-            background-color: #555;
-        }
-        .post {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .post img {
-            max-width: 100px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .button-container a {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .button-container a:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'home' %}">Accueil</a>
-            <a href="{% url 'create_ticket' %}">Demander une critique</a>
-            <a href="{% url 'create_review' %}">Créer une critique</a>
-            <a href="{% url 'subscriptions' %}">Abonnements</a>
-            <a href="{% url 'user_posts' %}">Mes posts</a>
-            <a href="{% url 'logout' %}">Déconnexion</a>
-        </nav>
-    </header>
-    <main>
-        <div class="button-container">
-            <a href="{% url 'create_ticket' %}">Demander une critique</a>
-            <a href="{% url 'create_review' %}">Créer une critique</a>
-        </div>
-        <h2>Demandes de critiques</h2>
-        {% for ticket in tickets %}
-            <div class="post">
-                <h2>{{ ticket.title }}</h2>
-                <p>{{ ticket.description }}</p>
-                {% if ticket.image %}
-                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
-                {% endif %}
-                <p>Posté par {{ ticket.user.username }} le {{ ticket.time_created }}</p>
-                {% if not ticket.has_review %}
-                    <a href="{% url 'respond_to_ticket' ticket.id %}">Répondre à cette demande</a>
-                {% else %}
-                    <p>Critique déjà faite</p>
-                {% endif %}
-            </div>
-        {% endfor %}
+{% extends 'reviews/base.html' %}
 
-        <h2>Critiques</h2>
-        {% for review in reviews %}
-            <div class="post">
-                <h2>{{ review.headline }} - {{ review.rating }} étoiles</h2>
-                <p>{{ review.body }}</p>
-                {% if review.ticket %}
-                    <div>
-                        <strong>Ticket - {{ review.ticket.user.username }}</strong>
-                        <p>{{ review.ticket.title }} - {{ review.ticket.description }}</p>
-                        {% if review.ticket.image %}
-                            <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}">
+{% block title %}Flux{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Flux</h1>
+        <div>
+            <a href="{% url 'create_ticket' %}" class="btn btn-primary">Demander une critique</a>
+            <a href="{% url 'create_review' %}" class="btn btn-secondary">Créer une critique</a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for post in posts %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        {% if post.title %}
+                            <h5 class="card-title">{{ post.title }}</h5>
+                            <p class="card-text">{{ post.description }}</p>
+                            {% if post.image %}
+                                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid mb-2" style="max-height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <p class="text-muted">Posté par {{ post.user.username }} le {{ post.time_created }}</p>
+                            {% if not post.review_set.exists %}
+                                <a href="{% url 'respond_to_ticket' post.id %}" class="btn btn-outline-primary">Créer une critique</a>
+                            {% else %}
+                                <p class="text-success">Critique déjà faite</p>
+                            {% endif %}
+                        {% else %}
+                            <h5 class="card-title">{{ post.headline }} - {{ post.rating }} étoiles</h5>
+                            <p class="card-text">{{ post.body }}</p>
+                            <p class="text-muted">Posté par {{ post.user.username }} le {{ post.time_created }}</p>
+                            {% if post.ticket %}
+                                <p class="text-muted">Ticket : {{ post.ticket.title }}</p>
+                                {% if post.ticket.image %}
+                                    <img src="{{ post.ticket.image.url }}" alt="{{ post.ticket.title }}" class="img-fluid mb-2" style="max-height: 200px; object-fit: cover;">
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     </div>
-                {% endif %}
-                <p>Posté par {{ review.user.username }} le {{ review.time_created }}</p>
+                </div>
             </div>
         {% endfor %}
-    </main>
-</body>
-</html>
+    </div>
+{% endblock %}

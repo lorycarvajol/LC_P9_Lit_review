@@ -1,111 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Modifier votre critique</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #444;
-        }
-        nav a {
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        nav a:hover {
-            background-color: #555;
-        }
-        main {
-            width: 80%;
-            margin: 20px auto;
-        }
-        .form-container {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .form-container h2 {
-            margin-top: 0;
-        }
-        .form-container input[type="text"],
-        .form-container textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .form-container input[type="file"] {
-            margin: 10px 0;
-        }
-        .form-container input[type="submit"] {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .form-container input[type="submit"]:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'home' %}">Accueil</a>
-            <a href="{% url 'create_ticket' %}">Demander une critique</a>
-            <a href="{% url 'create_review' %}">Créer une critique</a>
-            <a href="{% url 'subscriptions' %}">Abonnements</a>
-            <a href="{% url 'user_posts' %}">Mes posts</a>
-            <a href="{% url 'logout' %}">Déconnexion</a>
-        </nav>
-    </header>
-    <main>
-        <h1>Modifier votre critique</h1>
-        <div class="form-container">
-            <h2>Vous êtes en train de poster en réponse à</h2>
-            <div>
-                <p>{{ review.ticket.user.username }} a demandé une critique</p>
-                <p><strong>{{ review.ticket.title }}</strong> - {{ review.ticket.description }}</p>
-                {% if review.ticket.image %}
-                    <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" style="max-width: 100px;">
-                {% endif %}
-                <p>{{ review.ticket.time_created }}</p>
-            </div>
+{% extends 'reviews/base.html' %}
+
+{% block title %}Modifier votre critique{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Modifier votre critique</h1>
+    <div class="card mb-3">
+        <div class="card-header">
+            Vous êtes en train de poster en réponse à
         </div>
-        <div class="form-container">
-            <h2>Critique</h2>
+        <div class="card-body">
+            <p>{{ review.ticket.user.username }} a demandé une critique</p>
+            <p><strong>{{ review.ticket.title }}</strong> - {{ review.ticket.description }}</p>
+            {% if review.ticket.image %}
+                <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" class="img-fluid" style="max-width: 100px;">
+            {% endif %}
+            <p>{{ review.ticket.time_created }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            Critique
+        </div>
+        <div class="card-body">
             <form method="post">
                 {% csrf_token %}
-                <label for="headline">Titre</label>
-                <input type="text" id="headline" name="headline" value="{{ form.headline.value }}" required>
-
-                <label for="rating">Note</label><br>
-                {% for i in form.rating.field.choices %}
-                    <input type="radio" id="rating{{ forloop.counter0 }}" name="rating" value="{{ i.0 }}" {% if i.0 == form.rating.value %}checked{% endif %}>
-                    <label for="rating{{ forloop.counter0 }}">{{ i.1 }}</label>
-                {% endfor %}
-                <br>
-
-                <label for="body">Commentaire</label>
-                <textarea id="body" name="body" rows="4" required>{{ form.body.value }}</textarea>
-
-                <input type="submit" value="Envoyer">
+                <div class="form-group">
+                    <label for="headline">Titre</label>
+                    <input type="text" class="form-control" id="headline" name="headline" value="{{ form.headline.value }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Note</label><br>
+                    {% for i in form.rating.field.choices %}
+                        <div class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" id="rating{{ forloop.counter0 }}" name="rating" value="{{ i.0 }}" {% if i.0 == form.rating.value %}checked{% endif %}>
+                            <label class="form-check-label" for="rating{{ forloop.counter0 }}">{{ i.1 }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="body">Commentaire</label>
+                    <textarea class="form-control" id="body" name="body" rows="4" required>{{ form.body.value }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Envoyer</button>
             </form>
         </div>
-    </main>
-</body>
-</html>
+    </div>
+</div>
+{% endblock %}

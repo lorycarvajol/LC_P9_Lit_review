@@ -1,122 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Vos posts</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        header {
-            background-color: #333;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #444;
-        }
-        nav a {
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        nav a:hover {
-            background-color: #555;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-        }
-        .post {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .post img {
-            max-width: 100px;
-        }
-        .post-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-        .post-buttons form {
-            display: inline;
-        }
-        .post-buttons button {
-            background-color: #444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .post-buttons button:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{% url 'home' %}">Flux</a>
-            <a href="{% url 'create_ticket' %}">Demander une critique</a>
-            <a href="{% url 'create_review' %}">Créer une critique</a>
-            <a href="{% url 'subscriptions' %}">Abonnements</a>
-            <a href="{% url 'user_posts' %}">Posts</a>
-            <a href="{% url 'logout' %}">Déconnexion</a>
-        </nav>
-    </header>
-    <div class="container">
-        <h1>Vos posts</h1>
-        {% for review in user_reviews %}
-            <div class="post">
-                <p>Vous avez publié une critique</p>
-                <h2>{{ review.headline }} - {{ review.rating }} ★★★★★</h2>
-                <p>{{ review.body }}</p>
+{% extends 'reviews/base.html' %}
+
+{% block title %}Vos posts{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">Vos posts</h1>
+
+    {% for review in user_reviews %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="text-muted">Vous avez publié une critique</p>
+                <h2 class="card-title">{{ review.headline }} - {{ review.rating }} ★★★★★</h2>
+                <p class="card-text">{{ review.body }}</p>
                 {% if review.ticket %}
-                    <div>
-                        <p>Ticket - {{ review.ticket.user.username }}</p>
-                        <h3>{{ review.ticket.title }} - {{ review.ticket.description }}</h3>
-                        {% if review.ticket.image %}
-                            <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}">
-                        {% endif %}
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <p class="text-muted">Ticket - {{ review.ticket.user.username }}</p>
+                            <h3 class="card-title">{{ review.ticket.title }} - {{ review.ticket.description }}</h3>
+                            {% if review.ticket.image %}
+                                <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" class="img-fluid" style="max-width: 100px;">
+                            {% endif %}
+                        </div>
                     </div>
                 {% endif %}
-                <p>Posté le {{ review.time_created }}</p>
-                <div class="post-buttons">
+                <p class="text-muted">Posté le {{ review.time_created }}</p>
+                <div class="d-flex justify-content-between mt-3">
                     <form method="get" action="{% url 'edit_review' review.id %}">
-                        <button type="submit">Modifier</button>
+                        <button type="submit" class="btn btn-primary">Modifier</button>
                     </form>
                     <form method="post" action="{% url 'delete_review' review.id %}">
                         {% csrf_token %}
-                        <button type="submit">Supprimer</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
                     </form>
                 </div>
             </div>
-        {% endfor %}
-        
-        {% for ticket in user_tickets %}
-            <div class="post">
-                <p>Vous avez publié un ticket</p>
-                <h2>{{ ticket.title }}</h2>
-                <p>{{ ticket.description }}</p>
+        </div>
+    {% endfor %}
+
+    {% for ticket in user_tickets %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="text-muted">Vous avez publié un ticket</p>
+                <h2 class="card-title">{{ ticket.title }}</h2>
+                <p class="card-text">{{ ticket.description }}</p>
                 {% if ticket.image %}
-                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}">
+                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" class="img-fluid" style="max-width: 100px;">
                 {% endif %}
-                <p>Posté le {{ ticket.time_created }}</p>
-                <div class="post-buttons">
+                <p class="text-muted">Posté le {{ ticket.time_created }}</p>
+                <div class="d-flex justify-content-between mt-3">
                     <form method="get" action="{% url 'edit_ticket' ticket.id %}">
-                        <button type="submit">Modifier</button>
+                        <button type="submit" class="btn btn-primary">Modifier</button>
                     </form>
                     <form method="post" action="{% url 'delete_ticket' ticket.id %}">
                         {% csrf_token %}
-                        <button type="submit">Supprimer</button>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
                     </form>
                 </div>
             </div>
-        {% endfor %}
-    </div>
-</body>
-</html>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

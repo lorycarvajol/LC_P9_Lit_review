@@ -1,0 +1,31 @@
+
+
+$primary-color: #333;
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: $primary-color;
+}
+
+header {
+    background-color: darken($primary-color, 10%);
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    background-color: lighten($primary-color, 10%);
+}
+
+nav a {
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    background-color: lighten($primary-color, 20%);
+}

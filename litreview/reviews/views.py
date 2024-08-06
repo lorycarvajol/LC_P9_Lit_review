@@ -7,6 +7,9 @@ from .forms import TicketForm, ReviewForm
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse
+from itertools import chain
+from django.core.paginator import Paginator
+from django.shortcuts import render
 
 
 def signup(request):
@@ -49,13 +52,17 @@ def logout_view(request):
 
 @login_required
 def home(request):
-    tickets = Ticket.objects.all().order_by("-time_created")
-    reviews = Review.objects.all().order_by("-time_created")
-    context = {
-        "tickets": tickets,
-        "reviews": reviews,
-    }
-    return render(request, "reviews/home.html", context)
+    all_posts = list(Ticket.objects.all()) + list(Review.objects.all())
+    all_posts.sort(key=lambda x: x.time_created, reverse=True)
+
+    paginator = Paginator(all_posts, 10)  # Affiche 10 posts par page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return render(request, "reviews/post_list.html", {"posts": page_obj})
+
+    return render(request, "reviews/home.html", {"posts": page_obj})
 
 
 @login_required

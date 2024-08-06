@@ -3,6 +3,8 @@
 {% block title %}Déconnexion{% endblock %}
 
 {% block content %}
-<h1>Vous êtes déconnecté</h1>
-<p><a href="{% url 'login' %}">Se reconnecter</a></p>
+<div class="container mt-5 text-center">
+    <h1>Vous êtes déconnecté</h1>
+    <p class="mt-3"><a href="{% url 'login' %}" class="btn btn-primary">Se reconnecter</a></p>
+</div>
 {% endblock %}

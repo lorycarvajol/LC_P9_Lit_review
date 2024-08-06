@@ -1,0 +1,31 @@
+{% for post in posts %}
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                {% if post.title %}
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.description }}</p>
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid mb-2" style="max-height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <p class="text-muted">Posté par {{ post.user.username }} le {{ post.time_created }}</p>
+                    {% if not post.review_set.exists %}
+                        <a href="{% url 'respond_to_ticket' post.id %}" class="btn btn-outline-primary">Créer une critique</a>
+                    {% else %}
+                        <p class="text-success">Critique déjà faite</p>
+                    {% endif %}
+                {% else %}
+                    <h5 class="card-title">{{ post.headline }} - {{ post.rating }} étoiles</h5>
+                    <p class="card-text">{{ post.body }}</p>
+                    <p class="text-muted">Posté par {{ post.user.username }} le {{ post.time_created }}</p>
+                    {% if post.ticket %}
+                        <p class="text-muted">Ticket : {{ post.ticket.title }}</p>
+                        {% if post.ticket.image %}
+                            <img src="{{ post.ticket.image.url }}" alt="{{ post.ticket.title }}" class="img-fluid mb-2" style="max-height: 200px; object-fit: cover;">
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endfor %}
