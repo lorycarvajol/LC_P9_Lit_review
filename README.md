@@ -1,4 +1,5 @@
 
+```markdown
 # LITReview
 
 Bienvenue sur **LITReview** ! Une plateforme pour demander et créer des critiques de livres et d'articles. 
@@ -26,6 +27,7 @@ Bienvenue sur **LITReview** ! Une plateforme pour demander et créer des critiqu
    ```bash
    git clone https://github.com/votre-utilisateur/votre-projet.git
    cd votre-projet
+```
 
 2. Créez et activez un environnement virtuel :
 
