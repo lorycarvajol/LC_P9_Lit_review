@@ -24,9 +24,9 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
-        "", RedirectView.as_view(url="login/", permanent=True)
-    ),  # Redirection par défaut vers la page de connexion
-    path("reviews/", include("reviews.urls")),
+        "reviews/", include("reviews.urls")
+    ),  # Ajoutez cette ligne si elle n'existe pas déjà
+    path("", include("reviews.urls")),  # Redirige vers reviews par défaut
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

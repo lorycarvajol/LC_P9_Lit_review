@@ -2,12 +2,14 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("", views.home, name="home"),
-    path("login/", views.login_view, name="login"),
+    path(
+        "", views.login_view, name="login"
+    ),  # Ajoutez cette ligne si elle n'existe pas déjà
     path("signup/", views.signup, name="signup"),
     path("logout/", views.logout_view, name="logout"),
+    path("home/", views.home, name="home"),
     path("create_ticket/", views.create_ticket, name="create_ticket"),
-    path("create_review/", views.create_review, name="create_review"),
+    path("create_review/", views.create_simple_review, name="create_simple_review"),
     path(
         "create_review/<int:ticket_id>/",
         views.create_review_response,

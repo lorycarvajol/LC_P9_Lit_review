@@ -4,60 +4,57 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Vos posts</h1>
-
-    {% for review in user_reviews %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <p class="text-muted">Vous avez publié une critique</p>
-                <h2 class="card-title">{{ review.headline }} - {{ review.rating }} ★★★★★</h2>
-                <p class="card-text">{{ review.body }}</p>
-                {% if review.ticket %}
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <p class="text-muted">Ticket - {{ review.ticket.user.username }}</p>
-                            <h3 class="card-title">{{ review.ticket.title }} - {{ review.ticket.description }}</h3>
-                            {% if review.ticket.image %}
-                                <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" class="img-fluid" style="max-width: 100px;">
-                            {% endif %}
+    <h1>Vos posts</h1>
+    <div class="row">
+        {% for review in user_reviews %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ review.headline }} - {{ review.rating }} étoiles</h5>
+                        <p class="card-text">{{ review.body }}</p>
+                        {% if review.ticket %}
+                            <div class="mb-2">
+                                <h6>Ticket - {{ review.ticket.title }}</h6>
+                                <p>{{ review.ticket.description }}</p>
+                                {% if review.ticket.image %}
+                                    <img src="{{ review.ticket.image.url }}" alt="{{ review.ticket.title }}" class="img-fluid" style="max-width: 200px;">
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        <p class="text-muted">Posté le {{ review.time_created }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'edit_review' review.id %}" class="btn btn-outline-secondary">Modifier</a>
+                            <form method="post" action="{% url 'delete_review' review.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">Supprimer</button>
+                            </form>
                         </div>
                     </div>
-                {% endif %}
-                <p class="text-muted">Posté le {{ review.time_created }}</p>
-                <div class="d-flex justify-content-between mt-3">
-                    <form method="get" action="{% url 'edit_review' review.id %}">
-                        <button type="submit" class="btn btn-primary">Modifier</button>
-                    </form>
-                    <form method="post" action="{% url 'delete_review' review.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                    </form>
                 </div>
             </div>
-        </div>
-    {% endfor %}
-
-    {% for ticket in user_tickets %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <p class="text-muted">Vous avez publié un ticket</p>
-                <h2 class="card-title">{{ ticket.title }}</h2>
-                <p class="card-text">{{ ticket.description }}</p>
-                {% if ticket.image %}
-                    <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" class="img-fluid" style="max-width: 100px;">
-                {% endif %}
-                <p class="text-muted">Posté le {{ ticket.time_created }}</p>
-                <div class="d-flex justify-content-between mt-3">
-                    <form method="get" action="{% url 'edit_ticket' ticket.id %}">
-                        <button type="submit" class="btn btn-primary">Modifier</button>
-                    </form>
-                    <form method="post" action="{% url 'delete_ticket' ticket.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                    </form>
+        {% endfor %}
+        
+        {% for ticket in user_tickets %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ ticket.title }}</h5>
+                        <p class="card-text">{{ ticket.description }}</p>
+                        {% if ticket.image %}
+                            <img src="{{ ticket.image.url }}" alt="{{ ticket.title }}" class="img-fluid mb-2" style="max-width: 200px;">
+                        {% endif %}
+                        <p class="text-muted">Posté le {{ ticket.time_created }}</p>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'edit_ticket' ticket.id %}" class="btn btn-outline-secondary">Modifier</a>
+                            <form method="post" action="{% url 'delete_ticket' ticket.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

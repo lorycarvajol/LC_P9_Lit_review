@@ -5,21 +5,14 @@ from django.contrib.auth import login, authenticate, logout
 from .models import Ticket, Review, UserFollows
 from .forms import TicketForm, ReviewForm
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.http import JsonResponse
-from itertools import chain
-from django.core.paginator import Paginator
-from django.shortcuts import render
 
 
 def signup(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=raw_password)
+            user = form.save()
             login(request, user)
             return redirect("home")
     else:
@@ -31,9 +24,10 @@ def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(
+                username=form.cleaned_data.get("username"),
+                password=form.cleaned_data.get("password"),
+            )
             if user is not None:
                 login(request, user)
                 return redirect("home")
@@ -42,72 +36,69 @@ def login_view(request):
     return render(request, "reviews/login.html", {"form": form})
 
 
-@login_required
 def logout_view(request):
-    if request.method == "POST":
-        logout(request)
-        return redirect("login")
-    return render(request, "reviews/logout.html")
+    logout(request)
+    return redirect("login")
 
 
 @login_required
 def home(request):
-    all_posts = list(Ticket.objects.all()) + list(Review.objects.all())
-    all_posts.sort(key=lambda x: x.time_created, reverse=True)
+    tickets = Ticket.objects.all().order_by("-time_created")
+    reviews = Review.objects.all().order_by("-time_created")
+    posts = sorted(
+        list(tickets) + list(reviews), key=lambda post: post.time_created, reverse=True
+    )
+    return render(request, "reviews/home.html", {"posts": posts})
 
-    paginator = Paginator(all_posts, 10)  # Affiche 10 posts par page
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
 
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return render(request, "reviews/post_list.html", {"posts": page_obj})
-
-    return render(request, "reviews/home.html", {"posts": page_obj})
+@login_required
+def create_simple_review(request):
+    if request.method == "POST":
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            # Assurez-vous de ne pas assigner de ticket pour une critique "simple"
+            review.save()
+            return redirect("home")
+    else:
+        review_form = ReviewForm()
+    return render(
+        request, "reviews/create_simple_review.html", {"review_form": review_form}
+    )
 
 
 @login_required
 def create_ticket(request):
     if request.method == "POST":
-        form = TicketForm(request.POST, request.FILES)
-        if form.is_valid():
-            ticket = form.save(commit=False)
+        ticket_form = TicketForm(request.POST, request.FILES)
+        if ticket_form.is_valid():
+            ticket = ticket_form.save(commit=False)
             ticket.user = request.user
             ticket.save()
             return redirect("home")
     else:
-        form = TicketForm()
-    return render(request, "reviews/create_ticket.html", {"form": form})
-
-
-@login_required
-def create_review(request):
-    if request.method == "POST":
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.user = request.user
-            review.save()
-            return redirect("home")
-    else:
-        form = ReviewForm()
-    return render(request, "reviews/create_review.html", {"form": form})
+        ticket_form = TicketForm()
+    return render(request, "reviews/create_ticket.html", {"ticket_form": ticket_form})
 
 
 @login_required
 def create_review_response(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     if request.method == "POST":
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
             review.user = request.user
             review.ticket = ticket
             review.save()
             return redirect("home")
     else:
-        form = ReviewForm()
+        review_form = ReviewForm()
     return render(
-        request, "reviews/create_review_response.html", {"form": form, "ticket": ticket}
+        request,
+        "reviews/create_review_response.html",
+        {"review_form": review_form, "ticket": ticket},
     )
 
 
@@ -169,12 +160,9 @@ def delete_ticket(request, ticket_id):
 @login_required
 def subscriptions(request):
     search_query = request.GET.get("search", "")
-    search_results = []
-    if search_query:
-        search_results = User.objects.filter(username__icontains=search_query).exclude(
-            username=request.user.username
-        )
-
+    search_results = User.objects.filter(username__icontains=search_query).exclude(
+        username=request.user.username
+    )
     if request.method == "POST":
         username = request.POST.get("username")
         try:
@@ -185,10 +173,8 @@ def subscriptions(request):
                 )
         except User.DoesNotExist:
             pass
-
     subscriptions = UserFollows.objects.filter(user=request.user)
     followers = UserFollows.objects.filter(followed_user=request.user)
-
     return render(
         request,
         "reviews/subscriptions.html",

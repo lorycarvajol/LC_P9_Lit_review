@@ -1,13 +1,13 @@
 {% extends 'reviews/base.html' %}
 
-{% block title %}Créer une demande de critique{% endblock %}
+{% block title %}Créer une critique{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Créer une demande de critique</h2>
-    <form method="post" enctype="multipart/form-data">
+    <h2>Créer une critique</h2>
+    <form method="post">
         {% csrf_token %}
-        {{ ticket_form.as_p }}
+        {{ review_form.as_p }}
         <button type="submit" class="btn btn-primary mt-3">Envoyer</button>
     </form>
 </div>
